@@ -1,0 +1,8 @@
+# Dependencies
+node_modules/
+.vercel/
+
+# Editor & System
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADITHYA MEDOJU | Data Analyst & Full-Stack Engineer</title>
+    <meta name="description"
+        content="Official portfolio of Adithya Medoju - Full-Stack Developer & Creative Technologist specializing in modern web systems, 3D WebGL, and responsive applications.">
+    <meta name="keywords"
+        content="Adithya Medoju, Full-Stack Developer, Three.js, WebGL, Creative Developer, Portfolio, Software Engineer">
+
+    <!-- Google Fonts: Orbitron for Sci-Fi Headers, Fira Code for Tech/Monospace -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Orbitron:wght@500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            black: '#030712',
+                            dark: '#080f1e',
+                            cyan: '#00ffcc',
+                            magenta: '#ff0080',
+                            blue: '#0070f3',
+                            dim: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        cyber: ['Orbitron', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Three.js for 3D Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: #030712;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            selection-background-color: #ff0080;
+            selection-color: #ffffff;
+        }
+
+        ::selection {
+            background: #ff0080;
+            color: #ffffff;
+        }
+
+        /* Cyber Scanline Overlay */
+        .scanlines {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* Neon Glow Effects */
+        .neon-border {
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.25), inset 0 0 15px rgba(0, 255, 204, 0.12);
+            border: 1px solid rgba(0, 255, 204, 0.5);
+        }
+
+        .neon-border-pink {
+            box-shadow: 0 0 15px rgba(255, 0, 128, 0.25), inset 0 0 15px rgba(255, 0, 128, 0.12);
+            border: 1px solid rgba(255, 0, 128, 0.5);
+        }
+
+        .neon-text-cyan {
+            text-shadow: 0 0 8px rgba(0, 255, 204, 0.6), 0 0 20px rgba(0, 255, 204, 0.3);
+        }
+
+        .neon-text-pink {
+            text-shadow: 0 0 8px rgba(255, 0, 128, 0.6), 0 0 20px rgba(255, 0, 128, 0.3);
+        }
+
+        /* Cyber Backdrop Glassmorphism */
+        .cyber-glass {
+            background: rgba(8, 15, 30, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .cyber-card {
+            background: rgba(11, 20, 38, 0.65);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cyber-card:hover {
+            border-color: rgba(0, 255, 204, 0.8);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 255, 204, 0.25);
+        }
+
+        .cyber-card-pink {
+            background: rgba(11, 20, 38, 0.65);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 128, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cyber-card-pink:hover {
+            border-color: rgba(255, 0, 128, 0.8);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(255, 0, 128, 0.25);
+        }
+
+        /* 3D Tilt Card Container */
+        .tilt-card {
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ffcc44;
+            border-radius: 2px;
+            border: 1px solid #00ffcc;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff008088;
+            border-color: #ff0080;
+        }
+
+        /* Cyber Button Clip Path */
+        .cyber-btn {
+            position: relative;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        /* Grid Background Pattern */
+        .cyber-grid-bg {
+            background-image: linear-gradient(rgba(0, 255, 204, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.04) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        /* Animated pulse ring */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.15);
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: scale(0.95);
+                opacity: 0.8;
+            }
+        }
+
+        .pulse-active {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="relative min-h-screen cyber-grid-bg text-slate-200">
+    <!-- Scanline Overlay Layer -->
+    <div class="fixed inset-0 scanlines z-40"></div>
+
+    <!-- 3D Canvas Background Container -->
+    <canvas id="bg-canvas" class="fixed inset-0 z-0"></canvas>
+
+    <!-- Navigation Bar HUD -->
+    <header
+        class="sticky top-0 z-50 cyber-glass border-b border-cyan-500/20 px-4 sm:px-6 lg:px-8 py-2.5 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            <!-- Brand Identity -->
+            <a href="#hero" class="flex items-center gap-2.5 group shrink-0" aria-label="Adithya Medoju Home">
+                <div
+                    class="relative flex items-center justify-center w-8 h-8 rounded border border-cyan-500/40 bg-cyan-950/50 group-hover:border-cyber-cyan transition-colors">
+                    <span class="w-2 h-2 bg-cyber-cyan rotate-45 shadow-[0_0_8px_#00ffcc]"></span>
+                </div>
+                <div class="flex flex-col">
+                    <span
+                        class="font-cyber font-bold text-sm sm:text-base tracking-wider text-white group-hover:text-cyber-cyan transition-colors leading-tight">
+                        ADITHYA<span class="text-cyber-cyan">.MEDOJU</span>
+                    </span>
+                    <span class="text-[9px] font-mono text-slate-400 tracking-wider">
+                        DATA &bull; FULL-STACK
+                    </span>
+                </div>
+            </a>
+
+            <!-- Desktop Center Nav Island -->
+            <nav
+                class="hidden md:flex items-center gap-1 p-1 rounded-full bg-slate-950/80 border border-cyan-500/20 shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                <a href="#about"
+                    class="px-3 py-1 rounded-full text-xs font-mono text-slate-300 hover:text-cyber-cyan hover:bg-cyan-950/50 transition-all flex items-center gap-1">
+                    <span class="text-cyber-cyan/50 text-[10px]">01</span>About
+                </a>
+                <a href="#skills"
+                    class="px-3 py-1 rounded-full text-xs font-mono text-slate-300 hover:text-cyber-cyan hover:bg-cyan-950/50 transition-all flex items-center gap-1">
+                    <span class="text-cyber-cyan/50 text-[10px]">02</span>Skills
+                </a>
+                <a href="#projects"
+                    class="px-3 py-1 rounded-full text-xs font-mono text-slate-300 hover:text-cyber-cyan hover:bg-cyan-950/50 transition-all flex items-center gap-1">
+                    <span class="text-cyber-cyan/50 text-[10px]">03</span>Projects
+                </a>
+                <a href="#terminal"
+                    class="px-3 py-1 rounded-full text-xs font-mono text-slate-300 hover:text-cyber-cyan hover:bg-cyan-950/50 transition-all flex items-center gap-1">
+                    <span class="text-cyber-cyan/50 text-[10px]">04</span>Terminal
+                </a>
+                <a href="#contact"
+                    class="px-3 py-1 rounded-full text-xs font-mono text-slate-300 hover:text-cyber-magenta hover:bg-pink-950/50 transition-all flex items-center gap-1">
+                    <span class="text-cyber-magenta/50 text-[10px]">05</span>Contact
+                </a>
+            </nav>
+
+            <!-- Right Controls & Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Live Telemetry Clock (Desktop) -->
+                <div
+                    class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 font-mono">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="sys-clock">UTC 00:00:00</span>
+                </div>
+
+                <!-- SFX Toggle Button -->
+                <button id="sfx-toggle-btn" onclick="toggleAudio()"
+                    class="px-2.5 py-1.5 rounded bg-slate-900/80 border border-cyan-500/30 hover:border-cyber-cyan text-[11px] font-mono text-cyber-cyan transition-colors flex items-center gap-1.5"
+                    title="Toggle Audio Feedback" aria-label="Toggle Sound Effects">
+                    <span id="sfx-status-dot" class="w-1.5 h-1.5 rounded-full bg-cyber-cyan animate-pulse"></span>
+                    <span id="sfx-status-text" class="hidden sm:inline">SFX: ON</span>
+                    <span class="sm:hidden">SFX</span>
+                </button>
+
+                <!-- Establish Link CTA (Desktop/Tablet) -->
+                <a href="#contact"
+                    class="hidden sm:inline-flex cyber-btn text-xs font-cyber font-bold px-3.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyber-cyan border border-cyber-cyan transition-all duration-300 shadow-[0_0_10px_rgba(0,255,204,0.2)]">
+                    ESTABLISH LINK
+                </a>
+
+                <!-- Mobile Hamburger Menu Button -->
+                <button id="mobile-menu-btn" onclick="toggleMobileMenu()"
+                    class="md:hidden p-2 rounded bg-slate-900/80 border border-cyan-500/30 text-cyber-cyan hover:border-cyber-cyan transition-colors focus:outline-none"
+                    aria-label="Toggle Navigation Menu">
+                    <svg id="hamburger-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <svg id="close-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown Navigation Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden pt-3 pb-2 mt-2.5 border-t border-cyan-500/20 space-y-2">
+            <div class="flex flex-col space-y-1 font-mono text-xs">
+                <a href="#about" onclick="toggleMobileMenu()"
+                    class="px-3 py-2 rounded bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-cyber-cyan hover:border-cyan-500/40 flex items-center justify-between transition-colors">
+                    <span><span class="text-cyber-cyan/60 mr-1.5">// 01.</span>ABOUT</span>
+                    <span class="text-slate-500">&rarr;</span>
+                </a>
+                <a href="#skills" onclick="toggleMobileMenu()"
+                    class="px-3 py-2 rounded bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-cyber-cyan hover:border-cyan-500/40 flex items-center justify-between transition-colors">
+                    <span><span class="text-cyber-cyan/60 mr-1.5">// 02.</span>SKILLS</span>
+                    <span class="text-slate-500">&rarr;</span>
+                </a>
+                <a href="#projects" onclick="toggleMobileMenu()"
+                    class="px-3 py-2 rounded bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-cyber-cyan hover:border-cyan-500/40 flex items-center justify-between transition-colors">
+                    <span><span class="text-cyber-cyan/60 mr-1.5">// 03.</span>PROJECTS</span>
+                    <span class="text-slate-500">&rarr;</span>
+                </a>
+                <a href="#terminal" onclick="toggleMobileMenu()"
+                    class="px-3 py-2 rounded bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-cyber-cyan hover:border-cyan-500/40 flex items-center justify-between transition-colors">
+                    <span><span class="text-cyber-cyan/60 mr-1.5">// 04.</span>TERMINAL</span>
+                    <span class="text-slate-500">&rarr;</span>
+                </a>
+                <a href="#contact" onclick="toggleMobileMenu()"
+                    class="px-3 py-2 rounded bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-cyber-magenta hover:border-pink-500/40 flex items-center justify-between transition-colors">
+                    <span><span class="text-cyber-magenta/60 mr-1.5">// 05.</span>CONTACT</span>
+                    <span class="text-slate-500">&rarr;</span>
+                </a>
+            </div>
+
+            <!-- Mobile Drawer Bottom Status & CTA -->
+            <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+                <span id="mobile-sys-clock" class="text-slate-400">UTC 00:00:00</span>
+                <a href="#contact" onclick="toggleMobileMenu()"
+                    class="cyber-btn px-3 py-1.5 bg-cyber-cyan text-cyber-black font-cyber font-bold text-xs shadow-[0_0_10px_rgba(0,255,204,0.3)]">
+                    ESTABLISH LINK &gt;&gt;
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="relative z-10 p-4 md:p-8 max-w-7xl mx-auto space-y-24 md:space-y-32">
+
+        <!-- ================= HERO SECTION ================= -->
+        <section id="hero" class="min-h-[80vh] flex flex-col justify-center pt-8 pb-12">
+            <div class="space-y-6 max-w-4xl">
+                <!-- Status Tag -->
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-500/40 text-xs text-cyber-cyan">
+                    <span class="w-2 h-2 rounded-full bg-cyber-cyan animate-pulse"></span>
+                    <span>Data Analyst // Full-Stack Developer</span>
+                </div>
+
+                <!-- Main Glitch/Glow Title -->
+                <div class="space-y-2">
+                    <p class="text-sm md:text-base font-mono text-slate-400 tracking-wider">
+                        INITIALIZING SYSTEM PROFILE...
+                    </p>
+                    <h1
+                        class="text-4xl sm:text-6xl md:text-7xl font-cyber font-black tracking-tight text-white uppercase">
+                        ADITHYA <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-teal-200 to-cyber-magenta neon-text-cyan">MEDOJU</span>
+                    </h1>
+                    <h2 class="text-lg sm:text-2xl md:text-3xl font-cyber text-slate-300 flex items-center gap-3">
+                        <span class="text-cyber-magenta">&gt;</span> Transforming Data into Actionable Business
+                        Decisions
+                    </h2>
+                </div>
+
+                <!-- Bio Summary -->
+                <p class="text-slate-400 text-sm md:text-base leading-relaxed max-w-2xl font-mono">
+                    Data-driven analyst experienced in building automated reports and dashboards, writing optimized SQL
+                    queries, and applying Python/Pandas for data analysis. Proven track record of improving accuracy and
+                    reducing manual processing time through data-driven solutions.
+                </p>
+
+                <!-- Action CTAs -->
+                <div class="flex flex-wrap items-center gap-4 pt-4">
+                    <a href="#projects"
+                        class="cyber-btn px-6 py-3.5 bg-cyber-cyan text-cyber-black font-cyber font-bold text-sm tracking-wider hover:bg-teal-300 transition-all duration-300 shadow-[0_0_20px_rgba(0,255,204,0.4)]">
+                        EXPLORE ARCHIVES &gt;&gt;
+                    </a>
+                    <a href="#terminal"
+                        class="cyber-btn px-6 py-3.5 bg-slate-900/80 hover:bg-slate-800 text-white font-cyber font-semibold text-sm tracking-wider border border-slate-700 hover:border-cyber-magenta hover:text-cyber-magenta transition-all duration-300">
+                        ACCESS TERMINAL
+                    </a>
+                    <a href="#contact"
+                        class="cyber-btn px-6 py-3.5 bg-pink-950/20 hover:bg-pink-900/30 text-cyber-magenta font-cyber font-semibold text-sm tracking-wider border border-cyber-magenta/40 hover:border-cyber-magenta transition-all duration-300">
+                        SEND TRANSMISSION
+                    </a>
+                </div>
+
+                <!-- Telemetry Matrix Bar -->
+                <div class="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="cyber-glass p-3 border border-slate-800 rounded">
+                        <span class="text-[10px] block text-slate-500 font-mono">SYS_STATUS</span>
+                        <span class="text-xs sm:text-sm font-cyber font-bold text-cyber-cyan">AVAILABLE</span>
+                    </div>
+                    <div class="cyber-glass p-3 border border-slate-800 rounded">
+                        <span class="text-[10px] block text-slate-500 font-mono">PRIMARY_ENGINE</span>
+                        <span class="text-xs sm:text-sm font-cyber font-bold text-white">THREE.JS / WEBGL</span>
+                    </div>
+                    <div class="cyber-glass p-3 border border-slate-800 rounded">
+                        <span class="text-[10px] block text-slate-500 font-mono">STACK</span>
+                        <span class="text-xs sm:text-sm font-cyber font-bold text-cyber-magenta">NODE // REACT</span>
+                    </div>
+                    <div class="cyber-glass p-3 border border-slate-800 rounded">
+                        <span class="text-[10px] block text-slate-500 font-mono">PING</span>
+                        <span class="text-xs sm:text-sm font-cyber font-bold text-emerald-400">14ms // OPTIMAL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABOUT & ARCHITECTURE ================= -->
+        <section id="about" class="space-y-8">
+            <div class="flex items-center gap-3 border-b border-cyan-500/20 pb-4">
+                <span class="text-cyber-cyan font-cyber font-bold text-xl">// 01.</span>
+                <h2 class="text-2xl md:text-3xl font-cyber font-bold tracking-wide text-white">SYSTEM SPECIFICATION //
+                    ABOUT</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Profile dossier -->
+                <div class="lg:col-span-7 space-y-5">
+                    <div class="cyber-card p-6 md:p-8 rounded-lg space-y-4">
+                        <div
+                            class="flex items-center justify-between text-xs text-cyber-cyan font-mono border-b border-cyan-500/20 pb-2">
+                            <span>OPERATIVE IDENTIFICATION</span>
+                            <span>LOC: HYDERABAD, IN</span>
+                        </div>
+                        <h3 class="text-xl md:text-2xl font-cyber font-bold text-white">
+                            Making Data Into Actional Insights Through <span class="text-cyber-cyan">Data
+                                visualization</span> &
+                            <span class="text-cyber-magenta">Full Stack Engineering</span>
+                        </h3>
+                        <p class="text-slate-300 leading-relaxed text-sm md:text-base">
+                            I'm Adithya Medoju — a Data Analyst and Python Full-Stack Developer
+                            building things at the intersection of data and software. From ML-powered
+                            tools to full-stack web apps, I work across the stack: Python, Django,
+                            React, MySQL/MongoDB, and Docker, with Pandas and scikit-learn for the
+                            data side.
+                        </p>
+                        <p class="text-slate-400 leading-relaxed text-sm">
+                            I enjoy building clean, fast, and scalable web applications. My approach combines solid
+                            engineering fundamentals with modern design thinking—creating systems that are both
+                            reliable and enjoyable to use.
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                            <div class="p-3.5 rounded bg-slate-900/60 border border-slate-800">
+                                <span class="text-cyber-cyan font-bold block text-sm mb-1">01 / Data Analysis &
+                                    Engineering
+                                </span>
+                                <span class="text-xs text-slate-400">Python-driven ETL pipelines, statistical modeling
+                                    with Pandas & scikit-learn, interactive Power BI dashboards, and scalable
+                                    MySQL/MongoDB data architectures..</span>
+                            </div>
+                            <div class="p-3.5 rounded bg-slate-900/60 border border-slate-800">
+                                <span class="text-cyber-magenta font-bold block text-sm mb-1">02 / Full-Stack Developer
+                                </span>
+                                <span class="text-xs text-slate-400">
+                                    Django/Flask backends, React/Vue frontends, and containerized deployments with
+                                    Docker.</span>
+                            </div>
+                            <div class="p-3.5 rounded bg-slate-900/60 border border-slate-800">
+                                <span class="text-cyber-cyan font-bold block text-sm mb-1">03 /Data Visualization &
+                                    Insights</span>
+                                <span class="text-xs text-slate-400">Interactive dashboards with Power BI & Tableau,
+                                    exploratory data analysis, and stakeholder-ready reporting that turns raw data into
+                                    decisions
+                                    .</span>
+                            </div>
+                            <div class="p-3.5 rounded bg-slate-900/60 border border-slate-800">
+                                <span class="text-cyber-magenta font-bold block text-sm mb-1">04 / Performance
+                                    Engineering</span>
+                                <span class="text-xs text-slate-400">Core Web Vitals optimization, asset bundling, and
+                                    clean async lifecycles.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HUD Telemetry Card -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="cyber-card-pink p-6 rounded-lg space-y-5">
+                        <div
+                            class="flex items-center justify-between text-xs text-cyber-magenta font-mono border-b border-pink-500/20 pb-2">
+                            <span>SYSTEM TELEMETRY</span>
+                            <span>NODE_STATUS: SYNCED</span>
+                        </div>
+
+                        <div class="space-y-4 text-xs font-mono">
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>PYTHON / DATA ANALYSIS</span>
+                                    <span class="text-cyber-cyan">94%</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-cyber-cyan w-[94%] shadow-[0_0_8px_#00ffcc]"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>SQL / DATABASE MANAGEMENT</span>
+                                    <span class="text-cyber-magenta">88%</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-cyber-magenta w-[88%] shadow-[0_0_8px_#ff0080]"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>POWER BI / DATA VISUALIZATION</span>
+                                    <span class="text-cyber-cyan">92%</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-cyber-cyan w-[92%] shadow-[0_0_8px_#00ffcc]"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-slate-300 mb-1">
+                                    <span>MACHINE LEARNING (PANDAS / SCIKIT-LEARN / SNOWFLAKE)</span>
+                                    <span class="text-cyber-magenta">85%</span>
+                                </div>
+                                <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                                    <div class="h-full bg-cyber-magenta w-[85%] shadow-[0_0_8px_#ff0080]"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="p-3 bg-pink-950/20 border border-pink-500/30 rounded text-xs text-slate-300 font-mono space-y-1">
+                            <span class="text-cyber-magenta font-bold block">OPERATIONAL PHILOSOPHY:</span>
+                            <p class="text-slate-400">"Never settle for surface-level numbers. Uncover the story data
+                                is trying to tell"</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SKILLS MATRIX ================= -->
+        <section id="skills" class="space-y-8">
+            <div class="flex items-center gap-3 border-b border-cyan-500/20 pb-4">
+                <span class="text-cyber-cyan font-cyber font-bold text-xl">// 02.</span>
+                <h2 class="text-2xl md:text-3xl font-cyber font-bold tracking-wide text-white">TECHNICAL ARSENAL //
+                    SKILLS</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Skill Column 1 -->
+                <div class="cyber-card p-5 rounded-lg space-y-4">
+                    <div class="flex items-center gap-2 text-cyber-cyan font-cyber font-bold text-sm">
+                        <span>[01]</span> DATA ANALYSIS & STATS
+                    </div>
+                    <ul class="space-y-2 text-xs font-mono text-slate-300">
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>Pandas / NumPy / SNOWFLAKE</span>
+                            <span class="text-cyber-cyan">ADVANCED</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>STASTICAL ANALYSIS</span>
+                            <span class="text-cyber-cyan">MASTER</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>SQL / PostgreSQL</span>
+                            <span class="text-cyber-cyan">PRO</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>EXCEL / GOOGLE SHEETS / AUTOMATIONS</span>
+                            <span class="text-cyber-cyan">EXPERT</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Skill Column 2 -->
+                <div class="cyber-card-pink p-5 rounded-lg space-y-4">
+                    <div class="flex items-center gap-2 text-cyber-magenta font-cyber font-bold text-sm">
+                        <span>[02]</span> VISUALIZATION & DASHBOARDING
+                    </div>
+                    <ul class="space-y-2 text-xs font-mono text-slate-300">
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>POWER BI / TABLEU / GOOGLE DATA STUDIO</span>
+                            <span class="text-cyber-magenta">ACTIVE</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>Matplotlib / Seaborn</span>
+                            <span class="text-cyber-magenta">HIGH</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>Dashboard Design</span>
+                            <span class="text-cyber-magenta">HIGH</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>pipelines</span>
+                            <span class="text-cyber-magenta">SMOOTH</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Skill Column 3 -->
+                <div class="cyber-card p-5 rounded-lg space-y-4">
+                    <div class="flex items-center gap-2 text-cyber-cyan font-cyber font-bold text-sm">
+                        <span>[03]</span> BACKEND & DATA
+                    </div>
+                    <ul class="space-y-2 text-xs font-mono text-slate-300">
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>Node.js / Express</span>
+                            <span class="text-cyber-cyan">EXP</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>RESTful APIs</span>
+                            <span class="text-cyber-cyan">SOLID</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>SQL & NoSQL</span>
+                            <span class="text-cyber-cyan">SCHEMA</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>WebSockets & Realtime</span>
+                            <span class="text-cyber-cyan">STREAM</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Skill Column 4 -->
+                <div class="cyber-card-pink p-5 rounded-lg space-y-4">
+                    <div class="flex items-center gap-2 text-cyber-magenta font-cyber font-bold text-sm">
+                        <span>[04]</span> TOOLS & WORKFLOW
+                    </div>
+                    <ul class="space-y-2 text-xs font-mono text-slate-300">
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>Git & GitHub</span>
+                            <span class="text-cyber-magenta">VCS</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>Jupyter Notebooks / Colab</span>
+                            <span class="text-cyber-magenta">ANALYZE</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>Docker Containers</span>
+                            <span class="text-cyber-magenta">DEPLOY</span>
+                        </li>
+                        <li
+                            class="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                            <span>Linux CLI Workflows</span>
+                            <span class="text-cyber-magenta">BASH</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= FEATURED PROJECTS ================= -->
+        <section id="projects" class="space-y-8">
+            <div class="flex items-center justify-between border-b border-cyan-500/20 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-cyber-cyan font-cyber font-bold text-xl">// 03.</span>
+                    <h2 class="text-2xl md:text-3xl font-cyber font-bold tracking-wide text-white">PROJECT VAULT //
+                        ARCHIVES</h2>
+                </div>
+                <span class="text-xs font-mono text-slate-400 hidden sm:inline-block">STATUS: 4 ENTRIES LOADED</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Project 1 -->
+                <article
+                    class="cyber-card tilt-card rounded-lg overflow-hidden flex flex-col justify-between border border-cyan-500/30">
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-cyan">
+                            <span>ENTRY_01 // Data Visualization</span>
+                            <span class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/40">FEATURED</span>
+                        </div>
+                        <h3 class="text-xl font-cyber font-bold text-white hover:text-cyber-cyan transition-colors">
+                            FINTRACK
+                        </h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            A personal finance tracking tool that helps users log, categorize, and monitor their income
+                            and expenses over time, giving them a clearer picture of their spending habits and financial
+                            health.
+
+                        </p>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-cyan-500/40 text-cyber-cyan">Python
+                            </span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">Pandas</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">Matplotlib
+                            </span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">MySQL</span>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center gap-4">
+                        <a href="#hero"
+                            class="text-xs font-cyber font-bold text-cyber-cyan hover:underline flex items-center gap-1">
+                            &gt; VIEW LIVE ENGINE
+                        </a>
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                            class="text-xs font-cyber text-slate-400 hover:text-white flex items-center gap-1">
+                            SOURCE CODE &nearr;
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Project 2 -->
+                <article
+                    class="cyber-card-pink tilt-card rounded-lg overflow-hidden flex flex-col justify-between border border-pink-500/30">
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-magenta">
+                            <span>ENTRY_02 // Data Analysis</span>
+                            <span class="px-2 py-0.5 rounded bg-pink-950 border border-pink-500/40">DEPLOYED</span>
+                        </div>
+                        <h3 class="text-xl font-cyber font-bold text-white hover:text-cyber-magenta transition-colors">
+                            AI-POWERED RESUME SCREENER
+                        </h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Automatically screens and ranks resumes against a given job description, helping identify
+                            the most relevant candidates without manual review of every resume.
+
+                        </p>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-pink-500/40 text-cyber-magenta">Pandas</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">NumPy</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">SCIKIT-LEARN</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">csv
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center gap-4">
+                        <a href="#contact"
+                            class="text-xs font-cyber font-bold text-cyber-magenta hover:underline flex items-center gap-1">
+                            &gt; REQUEST DEMO
+                        </a>
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                            class="text-xs font-cyber text-slate-400 hover:text-white flex items-center gap-1">
+                            SOURCE CODE &nearr;
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Project 3 -->
+                <article
+                    class="cyber-card tilt-card rounded-lg overflow-hidden flex flex-col justify-between border border-cyan-500/30">
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-cyan">
+                            <span>ENTRY_03 // Full Stack Python-driven</span>
+                            <span class="px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/40">PRODUCTION</span>
+                        </div>
+                        <h3 class="text-xl font-cyber font-bold text-white hover:text-cyber-cyan transition-colors">
+                            AETHER VAULT // SECURE ASSET CLOUD
+                        </h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            End-to-end encrypted distributed document and asset management system. Features
+                            biometric-style client authentication, automated hash verification, and instant encrypted
+                            sharing.
+                        </p>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-cyan-500/40 text-cyber-cyan">TypeScript</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">Express
+                                API</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">PostgreSQL</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">Docker</span>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center gap-4">
+                        <a href="#contact"
+                            class="text-xs font-cyber font-bold text-cyber-cyan hover:underline flex items-center gap-1">
+                            &gt; CASE STUDY
+                        </a>
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                            class="text-xs font-cyber text-slate-400 hover:text-white flex items-center gap-1">
+                            SOURCE CODE &nearr;
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Project 4 -->
+                <article
+                    class="cyber-card-pink tilt-card rounded-lg overflow-hidden flex flex-col justify-between border border-pink-500/30">
+                    <div class="p-6 space-y-4">
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-magenta">
+                            <span>ENTRY_04 // FINANCIAL TELEMETRY</span>
+                            <span class="px-2 py-0.5 rounded bg-pink-950 border border-pink-500/40">LIVE</span>
+                        </div>
+                        <h3 class="text-xl font-cyber font-bold text-white hover:text-cyber-magenta transition-colors">
+                            CYBERPULSE TELEMETRY MONITOR
+                        </h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Real-time transaction stream visualizer with dynamic charting, latency alarms, and system
+                            health status monitoring built for high-throughput distributed architectures.
+                        </p>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-pink-500/40 text-cyber-magenta">Next.js</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">Chart.js</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">REST
+                                API</span>
+                            <span
+                                class="text-[11px] px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300">Tailwind</span>
+                        </div>
+                    </div>
+                    <div class="p-6 pt-0 flex items-center gap-4">
+                        <a href="#contact"
+                            class="text-xs font-cyber font-bold text-cyber-magenta hover:underline flex items-center gap-1">
+                            &gt; VIEW OVERVIEW
+                        </a>
+                        <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                            class="text-xs font-cyber text-slate-400 hover:text-white flex items-center gap-1">
+                            SOURCE CODE &nearr;
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ================= INTERACTIVE TERMINAL HUD ================= -->
+        <section id="terminal" class="space-y-6">
+            <div class="flex items-center gap-3 border-b border-cyan-500/20 pb-4">
+                <span class="text-cyber-cyan font-cyber font-bold text-xl">// 04.</span>
+                <h2 class="text-2xl md:text-3xl font-cyber font-bold tracking-wide text-white">INTERACTIVE SHELL // CLI
+                    CONSOLE</h2>
+            </div>
+
+            <!-- Terminal Window -->
+            <div
+                class="cyber-glass rounded-lg border border-cyan-500/40 overflow-hidden shadow-[0_0_20px_rgba(0,255,204,0.15)]">
+                <!-- Top Window Header Bar -->
+                <div class="bg-slate-950 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-yellow-500/80 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                        <span class="ml-3 text-xs text-slate-400 font-mono">adithya@nexus-deck:~ (bash)</span>
+                    </div>
+                    <span class="text-[11px] text-cyber-cyan font-mono hidden sm:inline-block">TTY_1 // SECURE</span>
+                </div>
+
+                <!-- Terminal Output Display -->
+                <div id="terminal-screen"
+                    class="p-4 md:p-6 font-mono text-xs md:text-sm text-slate-200 space-y-3 min-h-[260px] max-h-[400px] overflow-y-auto bg-black/70">
+                    <div class="text-slate-400">
+                        NEXUS CORE OS v3.8.4-RELEASE (x86_64-antigravity)<br>
+                        Type <span class="text-cyber-cyan font-bold">'help'</span> to see available commands or click
+                        quick action pills below.
+                    </div>
+                    <div>
+                        <span class="text-cyber-cyan">adithya@nexus:~$</span> <span class="text-white">whoami</span><br>
+                        <span class="text-slate-300">&gt; Adithya Medoju | Full-Stack Software Engineer & Creative
+                            Technologist</span>
+                    </div>
+                    <div>
+                        <span class="text-cyber-cyan">adithya@nexus:~$</span> <span class="text-white">cat
+                            status.json</span><br>
+                        <span class="text-emerald-400">{ "status": "AVAILABLE", "specialty": ["WebGL", "Full-Stack",
+                            "Three.js", "Clean Architecture"] }</span>
+                    </div>
+                </div>
+
+                <!-- Terminal Quick Action Pills -->
+                <div class="p-3 bg-slate-950/80 border-t border-slate-800 flex flex-wrap gap-2 text-xs font-mono">
+                    <span class="text-slate-500 self-center mr-1">QUICK CMDS:</span>
+                    <button onclick="runCommand('help')"
+                        class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-cyber-cyan hover:border-cyber-cyan transition-colors">
+                        help
+                    </button>
+                    <button onclick="runCommand('skills')"
+                        class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-cyber-cyan hover:border-cyber-cyan transition-colors">
+                        skills
+                    </button>
+                    <button onclick="runCommand('projects')"
+                        class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-cyber-cyan hover:border-cyber-cyan transition-colors">
+                        projects
+                    </button>
+                    <button onclick="runCommand('matrix')"
+                        class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-emerald-400 hover:border-emerald-400 transition-colors">
+                        matrix
+                    </button>
+                    <button onclick="runCommand('contact')"
+                        class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-cyber-magenta hover:border-cyber-magenta transition-colors">
+                        contact
+                    </button>
+                    <button onclick="runCommand('clear')"
+                        class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-400 hover:text-white transition-colors">
+                        clear
+                    </button>
+                </div>
+
+                <!-- Terminal Input Form -->
+                <form id="terminal-form" class="p-3 bg-black/90 border-t border-cyan-500/30 flex items-center gap-2">
+                    <span class="text-cyber-cyan font-mono text-xs md:text-sm pl-2">adithya@nexus:~$</span>
+                    <input type="text" id="terminal-input" autocomplete="off"
+                        placeholder="type a command (help, skills, projects, clear)..."
+                        class="w-full bg-transparent text-xs md:text-sm text-white font-mono focus:outline-none placeholder:text-slate-600">
+                    <button type="submit"
+                        class="cyber-btn px-4 py-1.5 bg-cyan-950 border border-cyber-cyan text-cyber-cyan text-xs font-mono hover:bg-cyan-900">
+                        EXEC
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= CONTACT & TRANSMISSION ================= -->
+        <section id="contact" class="space-y-8 pb-16">
+            <div class="flex items-center gap-3 border-b border-pink-500/20 pb-4">
+                <span class="text-cyber-magenta font-cyber font-bold text-xl">// 05.</span>
+                <h2 class="text-2xl md:text-3xl font-cyber font-bold tracking-wide text-white">INITIALIZE COMMS //
+                    TRANSMISSION</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Contact info panel -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="cyber-card-pink p-6 md:p-8 rounded-lg space-y-6">
+                        <div class="space-y-2">
+                            <span class="text-xs text-cyber-magenta font-mono block">COMMUNICATION FREQUENCY</span>
+                            <h3 class="text-xl font-cyber font-bold text-white">Let's build something extraordinary.
+                            </h3>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Whether you're planning a full-stack web application, an interactive 3D business
+                                dashboards, or any other custom software, my inbox is open.
+                            </p>
+                        </div>
+
+                        <!-- Direct contact items -->
+                        <div class="space-y-4 text-xs font-mono">
+                            <div
+                                class="p-3 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="text-slate-500 block text-[10px]">DIRECT_EMAIL</span>
+                                    <span class="text-slate-200 select-all font-semibold">adithyamedoju@gmail.com</span>
+                                </div>
+                                <button onclick="copyEmail()" id="copy-btn"
+                                    class="px-2.5 py-1 rounded bg-pink-950 border border-pink-500/50 text-cyber-magenta hover:bg-pink-900/50 transition-colors">
+                                    COPY
+                                </button>
+                            </div>
+
+                            <div
+                                class="p-3 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="text-slate-500 block text-[10px]">NETWORK_LOCATION</span>
+                                    <span class="text-slate-200">Hyderabad, India // Available Worldwide</span>
+                                </div>
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            </div>
+
+                            <div
+                                class="p-3 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="text-slate-500 block text-[10px]">RESPONSE_LATENCY</span>
+                                    <span class="text-slate-200">&lt; 24 Hours Estimated</span>
+                                </div>
+                                <span class="text-cyber-cyan">PRIORITY_QUEUE</span>
+                            </div>
+                        </div>
+
+                        <!-- Social buttons -->
+                        <div class="flex items-center gap-3 pt-2">
+                            <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                                class="flex-1 py-2.5 text-center text-xs font-cyber font-bold bg-slate-900 border border-slate-700 hover:border-cyber-cyan hover:text-cyber-cyan transition-colors rounded">
+                                GITHUB
+                            </a>
+                            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                                class="flex-1 py-2.5 text-center text-xs font-cyber font-bold bg-slate-900 border border-slate-700 hover:border-cyber-magenta hover:text-cyber-magenta transition-colors rounded">
+                                LINKEDIN
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact form -->
+                <div class="lg:col-span-7">
+                    <form id="contact-form" action="https://formsubmit.co/adithyamedoju@gmail.com" method="POST"
+                        class="cyber-card p-6 md:p-8 rounded-lg space-y-5 border border-cyan-500/30">
+                        <div class="flex items-center justify-between border-b border-cyan-500/20 pb-3">
+                            <span class="text-xs font-mono text-cyber-cyan flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-cyber-cyan animate-pulse"></span>
+                                TRANSMISSION_PACKET_BUILDER
+                            </span>
+                            <span class="text-[10px] font-mono text-slate-500">ENCRYPTION: ACTIVE (TLS 1.3)</span>
+                        </div>
+
+                        <!-- FormSubmit Configuration & Anti-Spam Honeypot -->
+                        <input type="text" name="_honey" id="form-honey" style="display:none" tabindex="-1" autocomplete="off">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_captcha" value="false">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label for="form-name" class="block text-xs font-mono text-slate-300">CALLSIGN // YOUR NAME</label>
+                                <input type="text" id="form-name" name="name" required autocomplete="name" placeholder="e.g. Alex Mercer"
+                                    class="w-full px-3.5 py-2.5 bg-black/60 border border-slate-800 focus:border-cyber-cyan rounded text-xs font-mono text-white focus:outline-none transition-colors">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label for="form-email" class="block text-xs font-mono text-slate-300">RETURN_ADDR // YOUR EMAIL</label>
+                                <input type="email" id="form-email" name="email" required autocomplete="email" placeholder="e.g. alex@cyberdyne.io"
+                                    class="w-full px-3.5 py-2.5 bg-black/60 border border-slate-800 focus:border-cyber-cyan rounded text-xs font-mono text-white focus:outline-none transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="form-subject" class="block text-xs font-mono text-slate-300">PACKET_HEADER // PROJECT SCOPE</label>
+                            <input type="text" id="form-subject" name="_subject" required
+                                placeholder="e.g. 3D Web Application / Full-Stack Collaboration"
+                                class="w-full px-3.5 py-2.5 bg-black/60 border border-slate-800 focus:border-cyber-cyan rounded text-xs font-mono text-white focus:outline-none transition-colors">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label for="form-message" class="block text-xs font-mono text-slate-300">PAYLOAD // YOUR MESSAGE</label>
+                            <textarea id="form-message" name="message" rows="5" required
+                                placeholder="Describe your project, timeline, or transmission details..."
+                                class="w-full px-3.5 py-2.5 bg-black/60 border border-slate-800 focus:border-cyber-cyan rounded text-xs font-mono text-white focus:outline-none transition-colors resize-none"></textarea>
+                        </div>
+
+                        <div class="space-y-3 pt-1">
+                            <button type="submit" id="submit-btn"
+                                class="cyber-btn w-full py-3.5 bg-cyber-cyan hover:bg-teal-300 text-cyber-black font-cyber font-bold text-sm tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(0,255,204,0.3)] flex items-center justify-center gap-2">
+                                <span id="submit-btn-text">SEND TRANSMISSION &gt;&gt;</span>
+                            </button>
+
+                            <div class="flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] font-mono text-slate-500 px-1">
+                                <span>Destination: <strong class="text-slate-300">adithyamedoju@gmail.com</strong></span>
+                                <a id="direct-mailto-link" href="mailto:adithyamedoju@gmail.com?subject=Portfolio%20Inquiry"
+                                    class="text-cyber-cyan hover:text-white transition-colors flex items-center gap-1 font-semibold">
+                                    <span>[OPEN IN EMAIL CLIENT ↗]</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div id="form-status" aria-live="polite" class="hidden text-center text-xs font-mono py-2 rounded"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer HUD -->
+    <footer
+        class="relative z-10 border-t border-slate-900 cyber-glass py-8 px-4 md:px-8 text-center text-xs font-mono text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-slate-400">
+                <span class="w-2 h-2 bg-cyber-cyan rounded-none rotate-45 inline-block"></span>
+                <span>ADITHYA MEDOJU // ALL SYSTEMS NOMINAL</span>
+            </div>
+            <div>
+                &copy; <span id="current-year"></span> ADITHYA MEDOJU. ENGINEERED WITH PRECISION.
+            </div>
+            <div>
+                <a href="#hero" class="text-cyber-cyan hover:text-white transition-colors">
+                    [RETURN_TO_APEX &uarr;]
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Portfolio Logic -->
+    <script>
+        // Set dynamic current year
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // System Clock Telemetry
+        function updateSysClock() {
+            const now = new Date();
+            const hours = String(now.getUTCHours()).padStart(2, '0');
+            const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+            const timeStr = `UTC ${hours}:${minutes}:${seconds}`;
+            const clockEl = document.getElementById('sys-clock');
+            if (clockEl) clockEl.textContent = timeStr;
+            const mobileClockEl = document.getElementById('mobile-sys-clock');
+            if (mobileClockEl) mobileClockEl.textContent = timeStr;
+        }
+        setInterval(updateSysClock, 1000);
+        updateSysClock();
+
+        // Mobile Menu Drawer Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const hamburger = document.getElementById('hamburger-icon');
+            const close = document.getElementById('close-icon');
+            if (menu) {
+                const isClosed = menu.classList.contains('hidden');
+                if (isClosed) {
+                    menu.classList.remove('hidden');
+                    if (hamburger) hamburger.classList.add('hidden');
+                    if (close) close.classList.remove('hidden');
+                } else {
+                    menu.classList.add('hidden');
+                    if (hamburger) hamburger.classList.remove('hidden');
+                    if (close) close.classList.add('hidden');
+                }
+            }
+        }
+
+        // Audio Engine Toggle
+        function toggleAudio() {
+            if (window.AudioEngine) {
+                window.AudioEngine.enabled = !window.AudioEngine.enabled;
+                const isEnabled = window.AudioEngine.enabled;
+                const textEl = document.getElementById('sfx-status-text');
+                const dotEl = document.getElementById('sfx-status-dot');
+                if (textEl) textEl.textContent = isEnabled ? 'SFX: ON' : 'SFX: OFF';
+                if (dotEl) {
+                    dotEl.className = isEnabled
+                        ? 'w-1.5 h-1.5 rounded-full bg-cyber-cyan animate-pulse'
+                        : 'w-1.5 h-1.5 rounded-full bg-slate-600';
+                }
+                if (isEnabled) window.AudioEngine.playClickSound();
+            }
+        }
+
+        // Global UI Click Sound Feedback
+        document.addEventListener('click', (e) => {
+            const clickable = e.target.closest('button, a, .cyber-btn');
+            // Avoid double sound on sfx toggle itself
+            if (clickable && clickable.id !== 'sfx-toggle-btn' && window.AudioEngine) {
+                window.AudioEngine.playClickSound();
+            }
+        });
+
+        // Copy Email to Clipboard helper
+        function copyEmail() {
+            const email = "adithyamedoju@gmail.com";
+            navigator.clipboard.writeText(email).then(() => {
+                if (window.AudioEngine) window.AudioEngine.playSuccessSound();
+                const btn = document.getElementById('copy-btn');
+                const prevText = btn.textContent;
+                btn.textContent = "COPIED!";
+                btn.classList.add('bg-emerald-950', 'text-emerald-400', 'border-emerald-500');
+                setTimeout(() => {
+                    btn.textContent = prevText;
+                    btn.classList.remove('bg-emerald-950', 'text-emerald-400', 'border-emerald-500');
+                }, 2000);
+            });
+        }
+
+        // Terminal CLI Command Bridge (Powered by CyberTerminal in Three.js)
+        function runCommand(cmdText) {
+            if (window.CyberTerminal && window.CyberTerminal.executeCommand) {
+                const output = document.getElementById('terminal-screen') || document.getElementById('terminal-output');
+                window.CyberTerminal.executeCommand(cmdText, output);
+            }
+        }
+
+        // Safe string escaping for UI HUD messages
+        function safeEscape(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Contact Form Handling (Live FormSubmit API + Autoresponder + Fallbacks)
+        const contactForm = document.getElementById('contact-form');
+        const formStatus = document.getElementById('form-status');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitBtnText = document.getElementById('submit-btn-text') || submitBtn;
+        const directMailtoLink = document.getElementById('direct-mailto-link');
+
+        // Dynamic Mailto Generator (keeps mailto URL in sync with what user types)
+        function syncDirectMailto() {
+            if (!directMailtoLink) return;
+            const name = document.getElementById('form-name')?.value.trim() || '';
+            const email = document.getElementById('form-email')?.value.trim() || '';
+            const subject = document.getElementById('form-subject')?.value.trim() || 'Portfolio Collaboration';
+            const message = document.getElementById('form-message')?.value.trim() || '';
+
+            let bodyContent = '';
+            if (name) bodyContent += `Sender Name: ${name}\n`;
+            if (email) bodyContent += `Sender Email: ${email}\n`;
+            if (message) bodyContent += `\nTransmission Payload:\n${message}\n`;
+
+            const fullSubject = `[Portfolio Transmission] ${subject}${name ? ' - ' + name : ''}`;
+            directMailtoLink.href = `mailto:adithyamedoju@gmail.com?subject=${encodeURIComponent(fullSubject)}&body=${encodeURIComponent(bodyContent)}`;
+        }
+
+        ['form-name', 'form-email', 'form-subject', 'form-message'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', syncDirectMailto);
+        });
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Anti-spam check (honeypot field)
+                const honey = document.getElementById('form-honey')?.value;
+                if (honey) {
+                    console.warn('Spam trap triggered.');
+                    return;
+                }
+
+                const name = document.getElementById('form-name').value.trim();
+                const email = document.getElementById('form-email').value.trim();
+                const subject = document.getElementById('form-subject').value.trim();
+                const message = document.getElementById('form-message').value.trim();
+
+                if (!name || !email || !message) return;
+
+                if (window.AudioEngine) window.AudioEngine.playCyberSound();
+
+                // Set loading telemetry state
+                submitBtn.disabled = true;
+                submitBtnText.innerHTML = `TRANSMITTING ENCRYPTED PACKETS...`;
+                submitBtn.classList.add('opacity-75', 'cursor-wait');
+
+                formStatus.className = "text-center text-xs font-mono py-3 px-4 rounded bg-cyan-950/70 border border-cyan-500/50 text-cyan-300 block";
+                formStatus.innerHTML = `<div class="flex items-center justify-center gap-2"><span class="w-2 h-2 rounded-full bg-cyber-cyan animate-ping"></span><span>DISPATCHING SECURE TRANSMISSION TO adithyamedoju@gmail.com...</span></div>`;
+                formStatus.classList.remove('hidden');
+
+                // Custom Auto-responder message sent to the sender
+                const autoResponseContent = `Hello ${name},
+
+Thank you for reaching out through my portfolio website. Your transmission regarding "${subject}" has been successfully logged into my priority queue.
+
+Here is a summary of your transmitted payload:
+--------------------------------------------------
+Project Scope: ${subject}
+Message:
+${message}
+--------------------------------------------------
+
+I review incoming transmissions promptly and will respond to you at ${email} within 24 hours.
+
+Best regards,
+Adithya Medoju
+Full-Stack Developer & Data Analyst
+Hyderabad, India // adithyamedoju@gmail.com`;
+
+                const packet = {
+                    name: name,
+                    email: email,
+                    _replyto: email,
+                    _subject: `[Portfolio Transmission] ${subject} - From ${name}`,
+                    message: message,
+                    _autoresponse: autoResponseContent,
+                    _template: "table",
+                    _captcha: "false"
+                };
+
+                // Check for file:// protocol execution
+                if (window.location.protocol === 'file:') {
+                    setTimeout(() => {
+                        if (window.AudioEngine) window.AudioEngine.playSuccessSound();
+                        submitBtn.disabled = false;
+                        submitBtnText.innerHTML = `SEND TRANSMISSION &gt;&gt;`;
+                        submitBtn.classList.remove('opacity-75', 'cursor-wait');
+
+                        formStatus.className = "text-center text-xs font-mono py-4 px-4 rounded bg-emerald-950/90 border border-emerald-500 text-emerald-300 space-y-2 block";
+                        formStatus.innerHTML = `
+                            <div class="font-bold flex items-center justify-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                TRANSMISSION READY // LOCAL ENVIRONMENT DETECTED
+                            </div>
+                            <div class="text-slate-300 text-[11px] leading-relaxed">
+                                When hosted on a web server (e.g. GitHub Pages, Vercel, or local Live Server), FormSubmit will deliver this directly to <strong>adithyamedoju@gmail.com</strong> with an automatic responsive confirmation to <strong>${safeEscape(email)}</strong>.
+                            </div>
+                            <div class="pt-2">
+                                <a href="${directMailtoLink.href}" class="inline-block px-3 py-1.5 bg-emerald-900 hover:bg-emerald-800 text-emerald-200 border border-emerald-400 rounded text-xs font-bold transition-colors">
+                                    [LAUNCH IN DEFAULT EMAIL CLIENT NOW ↗]
+                                </a>
+                            </div>
+                        `;
+                    }, 800);
+                    return;
+                }
+
+                try {
+                    const response = await fetch("https://formsubmit.co/ajax/adithyamedoju@gmail.com", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json"
+                        },
+                        body: JSON.stringify(packet)
+                    });
+
+                    const data = await response.json();
+
+                    submitBtn.disabled = false;
+                    submitBtnText.innerHTML = `SEND TRANSMISSION &gt;&gt;`;
+                    submitBtn.classList.remove('opacity-75', 'cursor-wait');
+
+                    // If FormSubmit requires first-time activation
+                    if (data && data.message && data.message.toLowerCase().includes('activate')) {
+                        if (window.AudioEngine) window.AudioEngine.playSuccessSound();
+                        formStatus.className = "text-center text-xs font-mono py-4 px-4 rounded bg-amber-950/80 border border-amber-500 text-amber-200 space-y-2 block";
+                        formStatus.innerHTML = `
+                            <div class="font-bold text-amber-300 flex items-center justify-center gap-2">
+                                <span>⚡ 1-TIME ACTIVATION LINK SENT</span>
+                            </div>
+                            <div class="text-[11px] leading-relaxed text-slate-200">
+                                FormSubmit has sent a 1-time activation link to <strong>adithyamedoju@gmail.com</strong>.
+                                <br>Adithya: Open Gmail and click <strong>"Activate Form"</strong> to finish connecting your inbox. Your message has been queued.
+                            </div>
+                        `;
+                        contactForm.reset();
+                        syncDirectMailto();
+                    } else if (response.ok || (data && (data.success === "true" || data.success === true))) {
+                        // Success!
+                        if (window.AudioEngine) window.AudioEngine.playSuccessSound();
+                        formStatus.className = "text-center text-xs font-mono py-4 px-4 rounded bg-emerald-950/90 border border-emerald-500 text-emerald-300 space-y-2 block";
+                        formStatus.innerHTML = `
+                            <div class="font-bold flex items-center justify-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                TRANSMISSION CONFIRMED // PACKET DELIVERED
+                            </div>
+                            <div class="text-slate-200 text-[11px] leading-relaxed">
+                                Thank you, <strong class="text-white">${safeEscape(name)}</strong>! Your transmission and project payload have been delivered to Adithya at <strong>adithyamedoju@gmail.com</strong>.
+                            </div>
+                            <div class="text-[10px] text-emerald-400">
+                                ✓ An automated responsive confirmation packet has been dispatched to <strong>${safeEscape(email)}</strong>. Expect a response within 24 hours.
+                            </div>
+                        `;
+                        contactForm.reset();
+                        syncDirectMailto();
+
+                        setTimeout(() => {
+                            formStatus.classList.add('hidden');
+                        }, 12000);
+                    } else {
+                        throw new Error(data.message || 'Transmission failed');
+                    }
+                } catch (err) {
+                    console.error('Contact transmission error:', err);
+                    if (window.AudioEngine) window.AudioEngine.playErrorSound();
+
+                    submitBtn.disabled = false;
+                    submitBtnText.innerHTML = `SEND TRANSMISSION &gt;&gt;`;
+                    submitBtn.classList.remove('opacity-75', 'cursor-wait');
+
+                    formStatus.className = "text-center text-xs font-mono py-4 px-4 rounded bg-rose-950/90 border border-rose-500 text-rose-300 space-y-2 block";
+                    formStatus.innerHTML = `
+                        <div class="font-bold flex items-center justify-center gap-2 text-rose-400">
+                            <span>⚠ TRANSMISSION ROUTING ERROR</span>
+                        </div>
+                        <div class="text-[11px] text-slate-300">
+                            Network connection failed. You can launch your mail client directly to dispatch this transmission to <strong>adithyamedoju@gmail.com</strong>:
+                        </div>
+                        <div class="pt-1">
+                            <a href="${directMailtoLink.href}" class="inline-block px-4 py-2 bg-rose-900/80 hover:bg-rose-800 text-white border border-rose-400 rounded text-xs font-cyber font-bold tracking-wider transition-colors shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+                                [DISPATCH VIA EMAIL CLIENT ↗]
+                            </a>
+                        </div>
+                    `;
+                }
+            });
+        }
+    </script>
+
+    <!-- Link Custom Three.js 3D Background Script -->
+    <script src="Three.js"></script>
+</body>
+
+</html>
